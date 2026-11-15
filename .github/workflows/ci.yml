@@ -5,6 +5,13 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch ou tag para compilar'
+        required: true
+        default: 'main'
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -27,6 +34,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable

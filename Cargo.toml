@@ -4,14 +4,18 @@ version = "0.1.4-ps4"
 edition = "2021"
 
 [dependencies]
-sdl2 = { version = "0.37", features = ["bundled"] }
 reqwest = { version = "0.13", default-features = false, features = ["json", "query"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.0", features = ["full"] }
-rodio = "0.19"
 image = "0.25"
 directories = "5.0"
 uuid = { version = "1.0", features = ["v4", "serde"] }
 log = "0.4"
 env_logger = "0.11"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+rodio = "0.19"
+
+[target.'cfg(target_os = "freebsd")'.dependencies]
+rodio = { version = "0.19", default-features = false }

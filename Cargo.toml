@@ -21,3 +21,6 @@ rodio = "0.19"
 [target.'cfg(target_os = "freebsd")'.dependencies]
 rodio = { version = "0.19", default-features = false }
 rav1e = { version = "0.8", default-features = false }
+
+[patch.crates-io]
+alsa-sys = { version = "0.3" }

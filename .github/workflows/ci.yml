@@ -1,60 +1,35 @@
-name: Build Roblox 2016 Xbox Shell
+name: Build PS4 FreeBSD Target
 
 on:
   push:
-    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master" ]
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch ou tag para compilar'
-        required: true
-        default: 'main'
-        type: string
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
   build:
-    name: Build (${{ matrix.target }})
-    runs-on: ${{ matrix.os }}
-    
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            name: linux-x86_64
-          - os: ubuntu-latest
-            target: x86_64-unknown-freebsd
-            name: freebsd-orbis-ps4
+    name: Build (FreeBSD x86_64 / PS4)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || github.ref }}
+
+      - name: Set up Python & Install Compatible CMake
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install cmake==3.28.3
 
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: x86_64-unknown-freebsd
 
-      - name: Install System Dependencies (Linux)
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - name: Build Release Binary for FreeBSD
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libudev-dev libgtk-3-dev
+          cargo build --release --target x86_64-unknown-freebsd
 
-      - name: Build Release Binary
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: Archive Artifacts
+      - name: Archive Built Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: roblox-2016-xbox-${{ matrix.name }}
-          path: |
-            target/${{ matrix.target }}/release/roblox-2016-xbox
-            assets/
+          name: roblox-2016-xbox-ps4
+          path: target/x86_64-unknown-freebsd/release/roblox-2016-xbox
